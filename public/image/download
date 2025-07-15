@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>𝗭𝗔𝗥𝗞 𝗗𝗘𝗩 - Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <h1> 𝗭𝗔𝗥𝗞 𝗗𝗘𝗩 ☣️🔕</h1>
+        <p>Chatbot Developer and Programmer</p>
+    </header>
+
+    <!-- About Section -->
+    <𝗕𝗘𝗚𝗚𝗘𝗡𝗘𝗥="about">
+        <h2>𝗧𝗔𝗞𝗘𝗡</h2>
+        <p>𝗙𝗔𝗜𝗧𝗛𝗭 𝗫 𝗡𝗔𝗧𝗛𝗭.</p>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects">
+        <h2>Projects</h2>
+        <div class="project">
+            <h3>𝗭𝗔𝗥𝗞 𝗗𝗘𝗩 </h3>
+            <p>𝗙𝗢𝗥 𝗣𝗘𝗥𝗦𝗢𝗡𝗔𝗟 𝗨𝗦𝗘 .</p>
+            <a href="#">View Project</a>
+        </div>
+        <!-- Add more projects as needed -->
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <h2>Programming Skills</h2>
+        <ul>
+            <li>HTML - 70%</li>
+            <li>CSS - 85%</li>
+            <li>JavaScript - 80%</li>
+            <!-- Add more skills as needed -->
+        </ul>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <h2>Contact 𝗭𝗔𝗥𝗞 𝗗𝗘𝗩 ☣️🔕</h2>
+        <p>Address: 𝗝𝗔𝗞𝗔𝗥𝗧𝗔 𝗜𝗡𝗗𝗢𝗡𝗘𝗦𝗜𝗔</p>
+        <p>Phone: 𝟲𝟯 𝟵𝟲𝟮 𝟱𝟲𝟰 𝟳𝟴𝟰𝟱</p>
+        <p>Email: nathzliban@gmail.com</p>
+        <p>GitHub: <a href="https://github.com/NathzDevs">yourusername</a></p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Zark Dev. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
