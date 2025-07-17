@@ -30,17 +30,13 @@ module.exports.handleEvent = async function ({ api, event }) {
             fs.writeFileSync(filePath, Buffer.from(data));
 
             api.sendMessage({
-                       ▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄
-                body: `▀▄👋 ${name} has left ${groupName}`,
-                       ▀▄ ▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄
+                body: `👋 ${name} Bye Ingat ka tanga kapa naman ${groupName}. Ingat ka tanga kapa naman!`,
                 attachment: fs.createReadStream(filePath)
             }, event.threadID, () => fs.unlinkSync(filePath));
         } catch (error) {
             console.error("Error fetching goodbye image:", error);
             api.sendMessage({
-                       ▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄
-                body: `▀▄👋 ${name} has left ${groupName}.`
-                       ▀▄ ▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄
+                body: `👋 ${name} has left ${groupName}.`
             }, event.threadID);
         }
     }
