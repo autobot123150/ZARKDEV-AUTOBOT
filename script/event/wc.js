@@ -1,52 +1,106 @@
+const axios = require('axios');
+const fs = require('fs');
+
 module.exports.config = {
-	name: "wc",
-	eventType: ["log:subscribe"],
-	version: "1.0.1",
-	credits: "ryuko",
-	description: "join and welcome notification",
-	dependencies: {
-		"fs-extra": ""
-	}
+    name: "welcomenoti",
+    version: "1.3.0", // Increment version for decorated code.
+    credits: "Vern", // Add credits.
+    description: "Sends a decorated welcome message with an image when a new member joins.",
+    usages: "No command usage, triggered automatically.",
+    cooldown: 5, // Add a cooldown (in seconds).
 };
 
-module.exports.run = async function({ api, event,Threads, botname, prefix}) {
-	const { join } = global.nodemodule["path"];
-	const { threadID } = event;
-	const data = (await Threads.getData(event.threadID)).data || {};
-    const checkban = data.banOut || []
-	const botID = await api.getCurrentUserID();
-	if  (checkban.includes(checkban[0])) return
-	else if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-        api.changeNickname(`${botname} ai`, threadID, botID);
-		return api.sendMessage(`bot connected successfully\n\nabout me?\nbot name : ${botname}\nbot prefix : ${prefix}\n\nbot data?\nusers : ${global.data.allUserID.length}\ngroups : ${global.data.allThreadID.get(botID).length}\n\nhow to use?\n${prefix}help (command list)\nai (question) - no prefix\ntalk (text) - no prefix\n\nryuko botpack v5`, threadID);
-	}
-	else {
-		try {
-			const { createReadStream, existsSync, mkdirSync } = global.nodemodule["fs-extra"];
-			let { threadName, participantIDs } = await api.getThreadInfo(threadID);
+module.exports.handleEvent = async function ({ api, event }) {
+    if (event.logMessageType === "log:subscribe") {
+        try {
+            const addedParticipants = event.logMessageData.addedParticipants;
+            const senderID = addedParticipants[0].userFbId;
+            let userInfo = await api.getUserInfo(senderID);
+            let name = userInfo[senderID].name;
+            const gender = userInfo[senderID]?.gender;
+            const prefix = gender === 2 ? "Mr." : gender === 1 ? "Miss" : "";
 
-			const threadData = global.data.threadData.get(parseInt(threadID)) || {};
+            const maxLength = 15;
+            if (name.length > maxLength) {
+                name = name.substring(0, maxLength - 3) + '...';
+            }
 
-			var mentions = [], nameArray = [], memLength = [], i = 0;
-			
-			for (id in event.logMessageData.addedParticipants) {
-				const userName = event.logMessageData.addedParticipants[id].fullName;
-				nameArray.push(userName);
-				mentions.push({ tag: userName, id });
-				memLength.push(participantIDs.length - i++);
-			}
-			memLength.sort((a, b) => a - b);
-			
-			(typeof threadData.customJoin == "undefined") ? msg = "hello, {name}. welcome to {threadName}." : msg = threadData.customJoin;
-			msg = msg
-			.replace(/\{name}/g, nameArray.join(', '))
-			.replace(/\{type}/g, (memLength.length > 1) ?  'friends' : 'you')
-			.replace(/\{soThanhVien}/g, memLength.join(', '))
-			.replace(/\{threadName}/g, threadName);
+            const groupInfo = await api.getThreadInfo(event.threadID);
+            const groupIcon = groupInfo.imageSrc || "https://i.ibb.co/G5mJZxs/rin.jpg";
+            const memberCount = groupInfo.participantIDs.length;
+            const groupName = groupInfo.threadName || "this group";
+            const background = groupInfo.imageSrc || "https://i.ibb.co/4YBNyvP/images-76.jpg";
+            const ownerID = groupInfo.adminIDs[0].id;
+            const ownerInfo = await api.getUserInfo(ownerID);
+            const ownerName = ownerInfo[ownerID].name;
+            const joinDate = new Date(event.logMessageData.time * 1000).toLocaleString();
+            const adminNames = groupInfo.adminIDs.map(async admin => (await api.getUserInfo(admin.id))[admin.id].name);
+            const adminsString = (await Promise.all(adminNames)).join(", ");
 
-			let formPush = { body: msg, mentions }
+            const startTime = global.startTime;
+            let uptime = "N/A";
+            if (startTime) {
+                const now = Date.now();
+                const diff = now - startTime;
+                const seconds = Math.floor(diff / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+                uptime = `${days}d ${hours % 24}h ${minutes % 60}m ${seconds % 60}s`;
+            }
 
-			return api.sendMessage(formPush, threadID);
-		} catch (e) { return console.log(e) };
-	}
-																								 }
+            const url = `https://joshweb.click/canvas/welcome?name=${encodeURIComponent(name)}&groupname=${encodeURIComponent(groupName)}&groupicon=${encodeURIComponent(groupIcon)}&member=${memberCount}&uid=${senderID}&background=${encodeURIComponent(background)}&owner=${encodeURIComponent(ownerName)}&joindate=${encodeURIComponent(joinDate)}&admins=${encodeURIComponent(adminsString)}&uptime=${encodeURIComponent(uptime)}`;
+
+            try {
+                const { data } = await axios.get(url, { responseType: 'arraybuffer' });
+                const filePath = './cache/welcome_image.jpg';
+                if (!fs.existsSync('./cache')) {
+                    fs.mkdirSync('./cache');
+                }
+                fs.writeFileSync(filePath, Buffer.from(data));
+
+                const welcomeMessage = `
+╔══════════════════════╗
+║ Hello ${prefix} ${name},
+║ ──────────────────
+║ You're The ${memberCount} Member
+║ ──────────────────
+║ Of ${groupName} Group
+║ ──────────────────
+║ Please Enjoy Your Stay
+║ ──────────────────
+║ And Make Lots Of Friends =)
+║ ──────-°°__𝗧𝗿𝘂𝘀𝘁 𝗺e 🔐 °__!!>🇲🇨💖🇵🇭
+║ My 𝗢𝘄𝗻𝗲𝗿 :𝗭𝗔𝗥𝗞 𝗗𝗘𝗩
+╚══════════════════════╝`;
+
+                await api.sendMessage({
+                    body: welcomeMessage,
+                    attachment: fs.createReadStream(filePath)
+                }, event.threadID, () => fs.unlinkSync(filePath));
+
+            } catch (imageError) {
+                console.error("Error fetching welcome image:", imageError);
+
+                const welcomeMessage = `
+╔══════════════════════╗
+║ Hello ${prefix} ${name},
+║ ──────────────────
+║ You're The ${memberCount} Member
+║ ──────────────────
+║ Of ${groupName} Group
+║ ──────────────────
+║ Please Enjoy Your Stay
+║ ──────────────────
+║ And Make Lots Of Friends =)
+║ ──────-°°__𝗧𝗿𝘂𝘀𝘁 𝗺e 🔐 °__!!>🇲🇨💖🇵🇭
+║ My Owner: 𝗭𝗔𝗥𝗞 𝗗𝗘𝗩  
+╚══════════════════════╝`;
+                await api.sendMessage({ body: welcomeMessage }, event.threadID);
+            }
+        } catch (generalError) {
+            console.error("Error during welcome message processing:", generalError);
+            await api.sendMessage("An error occurred during welcome message processing.", event.threadID);
+        }
+    }
+};
