@@ -4,7 +4,7 @@ module.exports.config = {
   name: "join",
   version: "1.0.0",
   role: 1,
-  credits: "Homer",
+  credits: "Kshitiz",
   description: "Join the specified group chat",
   commandCategory: "System",
   usages: "[threadID]",
