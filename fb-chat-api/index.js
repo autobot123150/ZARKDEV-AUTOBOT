@@ -51,7 +51,7 @@ async function setOptions(options = {}) {
     },
     bypassRegion: (value) => (globalOptions.bypassRegion = value),
   };
-  
+
   Object.entries(options).forEach(([key, value]) => {
     if (optionHandlers[key]) optionHandlers[key](value);
   });
@@ -67,16 +67,16 @@ async function checkIfSuspended(resp, appstate) {
   try {
     const appstateCUser = appstate.find((i) => i.key === "c_user" || i.key === "i_user");
     const UID = appstateCUser?.value;
-    
+
     if (resp?.request?.uri?.href?.includes(fbLink("checkpoint")) && resp.request.uri.href.includes("1501092823525282")) {
       const suspendReasons = {};
-      
+
       const daystoDisable = resp.body?.match(/"log_out_uri":"(.*?)","title":"(.*?)"/);
       if (daystoDisable?.[2]) {
         suspendReasons.durationInfo = daystoDisable[2];
         utils.error(`Suspension time remaining: ${suspendReasons.durationInfo}`);
       }
-      
+
       const reasonDescription = resp.body?.match(/"reason_section_body":"(.*?)"/);
       if (reasonDescription && reasonDescription[1]) {
         suspendReasons.longReason = reasonDescription[1];
@@ -84,12 +84,12 @@ async function checkIfSuspended(resp, appstate) {
           .toLowerCase()
           .replace("your account, or activity on it, doesn't follow our community standards on ", "")
           .replace(/^\w/, (c) => c.toUpperCase());
-        
+
         utils.error(`Alert on ${UID}: Account has been suspended!`);
         utils.error(`Why suspended: ${suspendReasons.longReason}`);
         utils.error(`Reason for suspension: ${suspendReasons.shortReason}`);
       }
-      
+
       ctx = null;
       return { suspended: true, suspendReasons };
     }
@@ -108,16 +108,16 @@ async function checkIfLocked(resp, appstate) {
   try {
     const appstateCUser = appstate.find((i) => i.key === "c_user" || i.key === "i_user");
     const UID = appstateCUser?.value;
-    
+
     if (resp?.request?.uri?.href?.includes(fbLink("checkpoint")) && resp.request.uri.href.includes("828281030927956")) {
       const lockedReasons = {};
       const lockDesc = resp.body?.match(/"is_unvetted_flow":true,"title":"(.*?)"/);
-      
+
       if (lockDesc && lockDesc[1]) {
         lockedReasons.reason = lockDesc[1];
         utils.error(`Alert on ${UID}: ${lockedReasons.reason}`);
       }
-      
+
       ctx = null;
       return { locked: true, lockedReasons };
     }
@@ -138,16 +138,16 @@ async function buildAPI(html, jar) {
   const cookies = jar.getCookies(fbLink());
   const primaryProfile = cookies.find((val) => val.cookieString().startsWith("c_user="));
   const secondaryProfile = cookies.find((val) => val.cookieString().startsWith("i_user="));
-  
+
   if (!primaryProfile && !secondaryProfile) {
     throw new Error(ERROR_RETRIEVING);
   }
-  
+
   if (html.includes("/checkpoint/block/?next")) {
     utils.warn("login", "Checkpoint detected. Please log in with a browser to verify.");
     throw new Error("Checkpoint detected");
   }
-  
+
   userID = secondaryProfile?.cookieString().split("=")[1] || primaryProfile.cookieString().split("=")[1];
   const refreshFb_dtsg = async () => {
     const getDtsg = await utils.get(fbLink("ajax/dtsg/?__a=true"), jar, null, globalOptions);
@@ -197,7 +197,7 @@ async function buildAPI(html, jar) {
     region = regions[Math.floor(Math.random() * regions.length)].toUpperCase();
     utils.warn("No region is specified from this account, now using random region. This doesn't guarantee the effectiveness.");
   }
-  
+
   mqttEndpoint = mqttEndpoint || `wss://edge-chat.facebook.com/chat?region=${region}`;
   utils.log("Region specified:", region);
   utils.log("MQTT endpoint:", mqttEndpoint);
@@ -322,7 +322,7 @@ async function login(cookie, options, callback) {
     callback = options;
     options = {};
   }
-  
+
   const defaultOptions = {
     selfListen: false,
     selfListenEvent: false,
@@ -338,9 +338,9 @@ async function login(cookie, options, callback) {
     userAgent: utils.defaultUserAgent,
     randomUserAgent: false,
   };
-  
+
   Object.assign(globalOptions, defaultOptions, options);
-  
+
   const loginWs3 = () => {
     loginHelper(cookie, {
         relogin: loginWs3,
@@ -354,7 +354,7 @@ async function login(cookie, options, callback) {
       }
     );
   };
-  
+
   await setOptions(options);
   loginWs3();
 }
