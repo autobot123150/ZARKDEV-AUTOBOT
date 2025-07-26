@@ -17,7 +17,7 @@ module.exports = {
         let ownerUID = null;
         try {
             const appState = JSON.parse(fs.readFileSync("appState.json", "utf8"));
-            ownerUID = appState.ownerUid || "100030880666720";
+            ownerUID = appState.ownerUid || "61550188503841";
         } catch (e) {
             return api.sendMessage("❌ Failed to load the owner's UID from appState.json.", threadID);
         }
