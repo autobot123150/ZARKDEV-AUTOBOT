@@ -13,7 +13,7 @@ function formatFont(text) {
 }
 
 module.exports.config = {
-  name: 'zark',
+  name: 'yazky',
   version: '1.0.0',
   role: 0,
   hasPrefix: false,
@@ -34,7 +34,7 @@ module.exports.run = async function ({ api, event, args }) {
     return api.sendMessage(formatFont("❌ Please enter a message to send to Gemma."), threadID, messageID);
   }
 
-  api.sendMessage(formatFont("🤖 𝗭𝗔𝗥𝗞 𝗜𝗦 𝗧𝗛𝗜𝗡𝗞𝗜𝗡𝗚..."), threadID, async (err, info) => {
+  api.sendMessage(formatFont("🤖 Yazky is thinking..."), threadID, async (err, info) => {
     if (err) return;
 
     try {
@@ -49,7 +49,7 @@ module.exports.run = async function ({ api, event, args }) {
         const timePH = new Date(Date.now() + 8 * 60 * 60 * 1000).toLocaleString('en-US', { hour12: false });
 
         const replyMessage = `
-🤖 𝗭𝗔𝗥𝗞 𝗕𝗢𝗧𝗭☆
+🤖 Yazky Bot☆
 ━━━━━━━━━━━━━━━━━━
 ${responseText.trim()}
 ━━━━━━━━━━━━━━━━━━
