@@ -57,7 +57,7 @@ module.exports.run = async function({ api, event, args, admin }) {
   api.sendMessage(formatFont(`Your report has been sent to the bot admin successfully\nAt: ${time}`), event.threadID, () => {
     for (let o of admin) {
       const threadName = threadInfo.threadName || "Unnamed";
-      const reportContent = formatFont(`▱▱▱[𝗖𝗔𝗟𝗟 𝗔𝗗𝗠𝗜𝗡]▱▱▱\n\n- User Name: ${name}\n- User ID: ${event.senderID}\n- Sent from group: ${threadName}\n- Thread ID: ${event.threadID}\n\nContent:\n─────────────────\n${args.join(" ")}\n─────────────────\nTime: ${time}`);
+      const reportContent = formatFont(`▱▱▱[𝗖𝗔𝗟𝗟 𝗔𝗗𝗠𝗜𝗡]▱▱▱\n\n- User Name: ${name}\n- user I'd: ${event.senderID}\n- Sent from group: ${threadName}\n- Thread ID: ${event.threadID}\n\nContent:\n─────────────────\n${args.join(" ")}\n─────────────────\nTime: ${time}`);
       api.sendMessage(reportContent, o);
     }
   });
